@@ -1,0 +1,172 @@
+
+body {
+  display: flex;
+  flex-direction: colum;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  background-color: #0C1559;
+  min-height: 100vh;
+}
+
+header {
+  height: 50px;
+}
+
+main {
+  display: flex;
+  align-items: center;
+}
+
+.weather {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  height: 580px;
+  padding: 10px;
+  border: 1px solid lightgray;
+  background-color: #0C1559;
+  color: white;
+  font-family: 'Courier Prime', monospace;
+}
+
+.search {
+  height: 50px;
+  background-color: #0C1559;
+  color: white;
+  display: flex;
+}
+
+.search_input {
+  background-color: #0C1559;
+  color: white;
+  width: 100%;
+  font-size: 30px;
+  text-align: center;
+}
+
+section {
+  display: flex;
+  border: 1px solid lightgrey;
+  margin: 5px 0px;
+}
+
+.show-hide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid lightgrey;
+  margin: 5px 0px;
+  height: 50px;
+  font-size: 28px;
+  background-color: #553492;
+  color: white;
+  font-family: 'Courier Prime', monospace;
+}
+
+.section-1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.section-1 h2, h3 {
+  margin: 5px;
+}
+
+.section-2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+
+.section-2 article h2 {
+  margin-bottom: 0px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.section-3 {
+  display: flex;
+  align-items: center;
+  padding: 10px 0px 10px 0px;
+}
+
+.section-3 h2 {
+  font-size: 35px;
+  margin: 20px 30px 20px 20px;
+}
+
+.section-3 article {
+  font-size: 14px;
+}
+
+.section-4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px;
+}
+
+p {
+  margin: 10px 0px 0px 0px;
+  padding: 0px;
+}
+
+.futureDays {
+  display: flex;
+  background-color: #5aac84;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  height: 80px;
+}
+
+.futureDays section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  margin: 0px 10px 0px 0px;
+}
+
+.futureDays h3 {
+margin: 0px 0px 0px 10px;
+}
+
+[id='0'] {
+  display: none;
+}
+
+.nexttf {
+  background-color: #3b3e79;
+}
+
+.section-nexttf {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+}
+
+footer {
+  height: 50px;
+}
+
+time {
+  font-size: 30px;
+}
+
+.table {
+  border: solid 3px white;
+  margin: 30px;
+  background-color: white;
+
+  .bottom-border {
+    border-bottom: solid 3px grey;
+  }
+
+}

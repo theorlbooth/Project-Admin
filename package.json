@@ -7,7 +7,8 @@
     "backend": "nodemon backend/server.js",
     "seed": "node backend/seed.js",
     "frontend": "webpack-dev-server --mode=development --env.NODE_ENV=local",
-    "build": "webpack -p --env.NODE_ENV=production"
+    "build": "webpack -p --env.NODE_ENV=production",
+    "mongod": "mongod --dbpath ~/data/db"
   },
   "author": "",
   "license": "ISC",
@@ -28,19 +29,26 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "bulma": "^0.9.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.31",
     "mongoose": "^5.10.11",
     "mongoose-hidden": "^1.9.0",
     "mongoose-unique-validator": "^2.0.3",
     "react": "^16.13.1",
+    "react-charts": "^2.0.0-beta.7",
     "react-dom": "^16.13.1",
+    "react-live-clock": "^5.0.11",
     "react-map-gl": "^5.2.10",
-    "react-router-dom": "^5.2.0"
+    "react-moment": "^1.0.0",
+    "react-router-dom": "^5.2.0",
+    "recharts": "^2.0.3",
+    "validator": "^13.1.17"
   }
 }
