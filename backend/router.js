@@ -17,6 +17,6 @@ router.route('/users/:userId')
 
 router.route('/runs')
   .get(runController.getRuns)
-  .post(secureRoute.secureRoute, runController.addRun)
+  .post(runController.addRun)
 
 module.exports = router

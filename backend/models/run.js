@@ -6,7 +6,7 @@ const runSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   fiveK: { type: Number },
   distance: { type: Number },
-  user: { type: mongoose.Schema.ObjectId, ref: 'User', required: true }
+  user: { type: mongoose.Schema.ObjectId, ref: 'User' }
 })
 
 runSchema.plugin(uniqueValidator)
