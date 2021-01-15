@@ -9,8 +9,6 @@ const path = require('path')
 const dist = path.join(__dirname, 'dist')
 
 
-console.log(process.env.hello)
-
 
 mongoose.connect(
   dbURI,
