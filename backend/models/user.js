@@ -29,13 +29,15 @@ userSchema
     next()
   })
 
-userSchema.pre('save', function hashPassword(next) {
-  this.password - bcrypt.hashSync(this.password, bcrypt.genSaltSync())
-  next()
-})
+userSchema
+  .pre('save', function hashPassword(next) {
+    this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync())
+    next()
+  })
 
-userSchema.methods.validatePassword = function validatePassword(password) {
-  return bcrypt.compareSync(password, this.password)
-}
+userSchema
+  .methods.validatePassword = function validatePassword(password) {
+    return bcrypt.compareSync(password, this.password)
+  }
 
 module.exports = mongoose.model('User', userSchema)

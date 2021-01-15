@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
+const { dbURI } = require('./config/environment')
+require('dotenv').config
 
 const User = require('./models/user')
 
 mongoose.connect(
-  'mongodb://localhost/rundb',
+  dbURI, 
   { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true },
   (err) => {
     if (err) return console.log(err)
@@ -15,13 +17,6 @@ mongoose.connect(
           {
             username: 'Theo',
             email: 'theorlbooth@googlemail.com',
-            password: 'password',
-            passwordConfirmation: 'password',
-            isAdmin: true
-          },
-          {
-            username: 'Theo2',
-            email: 'theorlbooth2@googlemail.com',
             password: 'password',
             passwordConfirmation: 'password',
             isAdmin: true
