@@ -17,7 +17,11 @@ function addRun(req, res) {
   Run
     .create(req.body)
     .then(run => {
-      res.send(run)
+      Run
+        .find()
+        .then(runList => {
+          res.send(runList)
+        })
     })
     .catch(error => res.send(error))
 }

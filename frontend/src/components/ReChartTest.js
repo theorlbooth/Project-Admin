@@ -1,61 +1,69 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import moment, { now } from 'moment'
+
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area } from 'recharts'
 
 const ReChartTest = () => {
 
-  const data = [
-    {
-      date: '4-Jan', fiveK: 5.21, distance: 2.53
-    },
-    {
-      date: '5-Jan'
-    },
-    {
-      date: '6-Jan'
-    },
-    {
-      date: '7-Jan', fiveK: 5.26, distance: 3.79
-    },
-    {
-      date: '8-Jan'
-    },
-    {
-      date: '9-Jan', fiveK: 5.02, distance: 5.01
-    },
-    {
-      date: '10-Jan'
-    },
-    {
-      date: '11-Jan', fiveK: 5.11, distance: 5.02
-    },
-    {
-      date: '12-Jan'
-    },
-    {
-      date: '13-Jan'
-    },
-    {
-      date: '14-Jan', fiveK: 5.10, distance: 5.30
-    },
-    {
-      date: '15-Jan'
+  const [data, updateData] = useState([])
+
+  useEffect(() => {
+    axios.get('/api/runs')
+      .then(resp => {
+        resp.data.forEach(item => {
+          item.date = moment(item.date).format('DD-MMM')
+        })
+        updateData(resp.data)
+      })
+  }, [])
+
+  const [formData, updateFormData] = useState({
+    distance: '',
+    fiveK: ''
+  })
+
+  function handleChange(event) {
+    const name = event.targer.name
+    const value = event.target.value
+
+    const data = {
+      ...formData,
+      [name]: value
     }
-  ]
-
-  const now = new Date()
-  let millisTillTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 47, 0, 0) - now
-  if (millisTillTime < 0) {
-    millisTillTime += 86400000
+    updateFormData(data)
   }
 
-  function timeUpdate() {
-    console.log('Its Time')
-  }
-  
-  // setTimeout(function(){ alert('Its Time') }, millisTillTime)
-  setTimeout(function(){ console.log('Its Time') }, millisTillTime)
+  // console.log(moment(new Date() - 86400000).format())
 
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    now = moment(new Date() - 86400000).format()
+    const datesBetween = []
+
+    axios.get('/api/runs')
+      .then(resp => {
+        let lastDate = moment(resp.data[-1].date.format())
+        if (lastDate < now) {
+          while (lastDate < now) {
+            datesBetween.push(lastDate + 86400000)
+            lastDate += 86400000
+          }
+        }
+
+        datesBetween.forEach(date => {
+          axios.post('/api/runs', { fiveK: '', distance: '', date: date })
+        })
+
+        axios.post('/api/runs', formData)
+          .then(resp => {
+            updateData(resp.data)
+          })
+      })
+  }
 
 
   return <>
