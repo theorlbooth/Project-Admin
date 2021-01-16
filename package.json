@@ -48,6 +48,7 @@
     "react-map-gl": "^5.2.10",
     "react-moment": "^1.0.0",
     "react-router-dom": "^5.2.0",
+    "react-toggle": "^4.1.1",
     "recharts": "^2.0.3",
     "validator": "^13.1.17"
   }

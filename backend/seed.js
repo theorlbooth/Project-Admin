@@ -33,55 +33,55 @@ mongoose.connect(
           {
             date: 1609718400000,
             distance: 2.53,
-            fiveK: 5.21,
+            split: 5.21,
             user: users[0]
           },
           {
             date: 1609804800000,
             distance: '',
-            fiveK: '',
+            split: '',
             user: users[0]
           },
           {
             date: 1609891200000,
             distance: '',
-            fiveK: '',
+            split: '',
             user: users[0]
           },
           {
             date: 1609977600000,
             distance: 3.79,
-            fiveK: 5.26,
+            split: 5.26,
             user: users[0]
           },
           {
             date: 1610064000000,
             distance: '',
-            fiveK: '',
+            split: '',
             user: users[0]
           },
           {
             date: 1610150400000,
             distance: 5.01,
-            fiveK: 5.02,
+            split: 5.02,
             user: users[0]
           },
           {
             date: 1610236800000,
             distance: '',
-            fiveK: '',
+            split: '',
             user: users[0]
           },
           {
             date: 1610323200000,
             distance: 5.02,
-            fiveK: 5.11,
+            split: 5.11,
             user: users[0]
           },
           {
             date: 1610582400000,
             distance: 5.3,
-            fiveK: 5.10,
+            split: 5.10,
             user: users[0]
           }
         ])
