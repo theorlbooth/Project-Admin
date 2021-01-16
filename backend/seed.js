@@ -79,7 +79,7 @@ mongoose.connect(
             user: users[0]
           },
           {
-            date: 1610409600000,
+            date: 1610582400000,
             distance: 5.3,
             fiveK: 5.10,
             user: users[0]

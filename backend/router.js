@@ -19,4 +19,7 @@ router.route('/runs')
   .get(runController.getRuns)
   .post(runController.addRun)
 
+router.route('/runs/:runId')
+  .put(runController.amendRun)
+
 module.exports = router

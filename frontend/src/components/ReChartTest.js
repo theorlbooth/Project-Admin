@@ -17,7 +17,6 @@ const ReChartTest = () => {
         resp.data.forEach(item => {
           item.date = moment(item.date).format('DD-MMM')
         })
-        console.log(resp.data)
         updateData(resp.data)
       })
   }, [])
@@ -38,8 +37,6 @@ const ReChartTest = () => {
     updateFormData(data)
   }
 
-  // console.log(moment(new Date() - 86400000).format())
-
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -54,18 +51,28 @@ const ReChartTest = () => {
         const data = resp.data
         let lastDate = data[data.length - 1].date
         lastDate = moment(lastDate).unix() * 1000
-
-        if (lastDate < now) {
+        if (formData.distance === '' || formData.fiveK === '') {
+          updateFormData({ distance: '', fiveK: '' })
+          return
+        } else if (lastDate < now) {
           while (lastDate < now) {
             datesBetween.push(lastDate + 86400000)
             lastDate += 86400000
           }
-          console.log(datesBetween)
           datesBetween.forEach(date => {
             axios.post('/api/runs', { fiveK: '', distance: '', date: date })
           })
-        } else if (lastDate > now) {
-          console.log('Here')
+        } else if (lastDate > (now + 86400000)) {
+          const id = data[data.length - 1]._id
+
+          axios.put(`/api/runs/${id}`, formData)
+            .then(resp => {
+              resp.data.forEach(item => {
+                item.date = moment(item.date).format('DD-MMM')
+              })
+              updateData(resp.data)
+            })
+          updateFormData({ distance: '', fiveK: '' })
           return
         }
 
@@ -74,10 +81,10 @@ const ReChartTest = () => {
             resp.data.forEach(item => {
               item.date = moment(item.date).format('DD-MMM')
             })
-            console.log(resp.data)
             updateData(resp.data)
           })
       })
+    updateFormData({ distance: '', fiveK: '' })
   }
 
 
