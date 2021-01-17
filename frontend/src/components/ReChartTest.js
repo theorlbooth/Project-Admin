@@ -4,7 +4,7 @@ import moment, { now } from 'moment'
 import Toggle from 'react-toggle'
 
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Brush, AreaChart, Area } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 const ReChartTest = () => {
 
