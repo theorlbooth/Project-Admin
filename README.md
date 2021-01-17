@@ -65,11 +65,11 @@ I wanted a quick snap shot of the league table and of my teams current position.
   }
 ```
 ### Run Graph
-I wanted to be able to have a quick glimpse at fitness progression without having to deep dive into an app. This is by no means meant to be comprehensive and I will continue to use the app when required, but more of a snapshot. I wanted to track distance and speed over time as these seemed the two most relevant and the two units I strive to improve on. To plot these I used [Recharts](https://recharts.org/en-US). 
+I wanted to be able to have a quick glimpse at fitness progression without having to deep dive into an app. This is by no means meant to be comprehensive and I will continue to use the app when required. I wanted to track distance and speed over time as these seemed the two most relevant and the two units I strive to improve on. To plot these I used [Recharts](https://recharts.org/en-US). 
 
 I also wanted to be able to input the data from the UI and not having to change it in the code every time - for this I now needed a backend. Given that the information going in is pretty basic and this app is desgined for one user I decided to go with a NoSQL backend and follow the process of a MERN stack. 
 
-Plotting over time I found to be a lot less straight forward than anticipated. I presumed there would be a prop for the graph that could be set to start date and one to be set to current date and it would deliver everything in between. This was not the case. I toyed with a couple of ideas about how to go about doing this manually. The first of which was to have a function in a setTimeout that would fire every 24h and update the days in the backend (with empty data). However I didnt really like this as I didnt think it was the cleanest method and if left unchecked could open the door to more issues in the future. In the end I decided to update the past dates only when a new entry is logged. For this I wrote a function that chaecks the last input and pushes the dates since to an array. Each item in this array is then posted to the backend before the new data is posted for the current date. 
+Plotting over time I found to be a lot less straight forward than anticipated. I presumed there would be a prop for the graph that could be set to 'start date' and one to be set to 'current date' and it would deliver everything in between. This was not the case. I toyed with a couple of ideas of how to go about this manually. The first of which was to have a function in a setTimeout that would fire every 24h and update the days in the backend (with empty data). However I didnt really like this as I didnt think it was the cleanest method and if left unchecked could open the door to more issues in the future. In the end I decided to update the past dates only when a new entry is logged. For this I wrote a function that checks the last input and pushes the dates since to an array. Each item in this array is then posted to the backend before the new data is posted for the current date. 
 
 (selected parts from full function):
 
@@ -118,6 +118,9 @@ Plotting over time I found to be a lot less straight forward than anticipated. I
             updateData(resp.data)
           })
 ```
+
+The next step will be to do the refactoring of this function as it has a fair bit of repetition in it and is much longer than it needs to be.
+
 
 ## Screenshots
 
