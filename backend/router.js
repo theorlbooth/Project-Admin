@@ -21,5 +21,6 @@ router.route('/runs')
 
 router.route('/runs/:runId')
   .put(runController.amendRun)
+  .delete(runController.deleteRun)
 
 module.exports = router

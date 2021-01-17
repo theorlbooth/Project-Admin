@@ -77,12 +77,6 @@ mongoose.connect(
             distance: 5.02,
             split: 5.11,
             user: users[0]
-          },
-          {
-            date: 1610582400000,
-            distance: 5.3,
-            split: 5.10,
-            user: users[0]
           }
         ])
       })

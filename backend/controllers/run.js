@@ -57,9 +57,31 @@ function amendRun(req, res) {
     .catch(error => res.send(error))
 }
 
+function deleteRun(req, res) {
+  const id = req.params.runId
+  Run
+    .findById(id)
+    .then(run => {
+      if (!run) return res.status(404).send({
+        message: 'Not found'
+      })
+      run.deleteOne()
+        .then(run => {
+          Run
+            .find()
+            .then(runList => {
+              runList.sort((a, b) => (a.date > b.date) ? 1 : -1)
+              res.send(runList)
+            })
+        })
+    })
+    .catch(error => res.send(error))
+}
+
 
 module.exports = {
   getRuns,
   addRun,
-  amendRun
+  amendRun,
+  deleteRun
 }

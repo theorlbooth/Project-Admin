@@ -55,9 +55,44 @@ const ReChartTest = () => {
         let lastDate = data[data.length - 1].date
         lastDate = moment(lastDate).unix() * 1000
 
-        if (formData.distance === '' || formData.split === '') {
+        if (formData.distance === '' && formData.split === '' && formData._id === '') {
+          if (lastDate < now) {
+            while (lastDate < now) {
+              datesBetween.push(lastDate + 86400000)
+              lastDate += 86400000
+            }
+            datesBetween.forEach(date => {
+              axios.post('/api/runs', { split: '', distance: '', date: date })
+                .then(resp => {
+                  resp.data.forEach(item => {
+                    item.date = moment(item.date).format('DD-MMM')
+                  })
+                  updateData(resp.data)
+                })
+            })
+            updateFormData({ distance: '', split: '', _id: '' })
+            return
+          } else {
+            updateFormData({ distance: '', split: '', _id: '' })
+            return
+          }
+        } else if ((formData.distance === '' && formData._id === '') || (formData.split === '' && formData._id === '')) {
           updateFormData({ distance: '', split: '', _id: '' })
           return
+        } else if (formData.distance === '' && formData.split === '' && formData._id !== '') {
+
+          const id = formData._id
+
+          axios.put(`/api/runs/${id}`, formData)
+            .then(resp => {
+              resp.data.forEach(item => {
+                item.date = moment(item.date).format('DD-MMM')
+              })
+              updateData(resp.data)
+            })
+          updateFormData({ distance: '', split: '', _id: '' })
+          return
+
         } else if (formData.distance !== '' && formData.split !== '' && formData._id === '') {
 
           if (lastDate < now) {
@@ -93,8 +128,8 @@ const ReChartTest = () => {
             })
           updateFormData({ distance: '', split: '', _id: '' })
           return
-        } 
-        
+        }
+
         axios.post('/api/runs', { distance: formData.distance, split: formData.split })
           .then(resp => {
             console.log(resp.data)
