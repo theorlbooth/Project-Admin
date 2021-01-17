@@ -109,6 +109,16 @@ Plotting over time I found to be a lot less straight forward than anticipated. I
             return
           }
 ```
+```
+        axios.post('/api/runs', { distance: formData.distance, split: formData.split })
+          .then(resp => {
+            console.log(resp.data)
+            resp.data.forEach(item => {
+              item.date = moment(item.date).format('DD-MMM')
+            })
+            updateData(resp.data)
+          })
+```
 
 ## Screenshots
 
