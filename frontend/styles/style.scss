@@ -1,4 +1,11 @@
 
+html {
+  background-color: #0C1559;
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
+}
+
 body {
   display: flex;
   flex-direction: colum;
@@ -6,7 +13,10 @@ body {
   justify-content: center;
   margin: auto;
   background-color: #0C1559;
+  background-attachment: fixed;
+  background-size: cover;
   min-height: 100vh;
+  overflow-y: scroll;
 }
 
 header {
@@ -142,6 +152,9 @@ margin: 0px 0px 0px 10px;
 
 .nexttf {
   background-color: #3b3e79;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .section-nexttf {

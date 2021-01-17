@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import moment, { now } from 'moment'
 import Toggle from 'react-toggle'
@@ -83,7 +84,7 @@ const ReChartTest = () => {
 
           const id = formData._id
 
-          axios.put(`/api/runs/${id}`, formData)
+          axios.delete(`/api/runs/${id}`)
             .then(resp => {
               resp.data.forEach(item => {
                 item.date = moment(item.date).format('DD-MMM')
@@ -201,50 +202,53 @@ const ReChartTest = () => {
           <Line connectNulls name="1k Split (min)" type="linear" dataKey="split" stroke="#8884d8" label={{ fill: 'red', fontSize: 15, dy: -10 }} />
         </LineChart>
       </div>}
-      <div style={{ border: '1px solid white', borderRadius: '5px', padding: '20px', margin: '10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '6%' }}>
-          <Toggle
-            id='chart-toggle'
-            defaultChecked={false}
-            onChange={(event) => updateChartToggle(event.target.checked)} />
-          <label htmlFor='chart-toggle' style={{ color: 'white', marginLeft: '5%' }}>Split Charts</label>
-        </div>
-        <form onSubmit={handleSubmit} >
-          <div className="field">
-            <label style={{ color: 'white' }}>Distance (km):</label>
-            <input
-              className="input"
-              type="text"
-              onChange={handleChange}
-              value={formData.distance}
-              name="distance"
-              placeholder="Distance..." />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ border: '1px solid white', borderRadius: '5px', padding: '20px', margin: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '6%' }}>
+            <Toggle
+              id='chart-toggle'
+              defaultChecked={false}
+              onChange={(event) => updateChartToggle(event.target.checked)} />
+            <label htmlFor='chart-toggle' style={{ color: 'white', marginLeft: '5%' }}>Split Charts</label>
           </div>
-          <div className="field">
-            <label style={{ color: 'white' }}>1k Split (min):</label>
-            <input
-              className="input"
-              type="text"
-              onChange={handleChange}
-              value={formData.split}
-              name="split"
-              placeholder="1k Split..." />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.75rem' }}>
-            <label style={{ color: 'white' }}>Date to amend:</label>
-            <div className="select">
-              <select style={{ width: '100%' }} name="_id" onChange={handleChange}>
-                <option>{formData._id}</option>
-                {data.map((run, index) => {
-                  return <option key={index} value={run._id}>{run.date}</option>
-                })}
-              </select>
+          <form onSubmit={handleSubmit} >
+            <div className="field">
+              <label style={{ color: 'white' }}>Distance (km):</label>
+              <input
+                className="input"
+                type="text"
+                onChange={handleChange}
+                value={formData.distance}
+                name="distance"
+                placeholder="Distance..." />
             </div>
-          </div>
-          <div className="control" style={{ display: 'flex', justifyContent: 'center' }}>
-            <button>Submit</button>
-          </div>
-        </form>
+            <div className="field">
+              <label style={{ color: 'white' }}>1k Split (min):</label>
+              <input
+                className="input"
+                type="text"
+                onChange={handleChange}
+                value={formData.split}
+                name="split"
+                placeholder="1k Split..." />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.75rem' }}>
+              <label style={{ color: 'white' }}>Date to amend:</label>
+              <div className="select">
+                <select style={{ width: '100%' }} name="_id" onChange={handleChange}>
+                  <option>{formData._id}</option>
+                  {data.map((run, index) => {
+                    return <option key={index} value={run._id}>{run.date}</option>
+                  })}
+                </select>
+              </div>
+            </div>
+            <div className="control" style={{ display: 'flex', justifyContent: 'center' }}>
+              <button>Submit</button>
+            </div>
+          </form>
+        </div>
+        <Link to ="/"><button className="run-button" style={{ width: '200px', height: '40px', borderRadius: '5px' }}>Back</button></Link>
       </div>
     </div>
   </>
