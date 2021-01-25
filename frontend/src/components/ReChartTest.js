@@ -21,7 +21,6 @@ const ReChartTest = () => {
         resp.data.forEach(item => {
           item.date = moment(item.date).format('DD-MMM')
         })
-        console.log(resp.data)
         updateData(resp.data)
       })
   }, [])
@@ -30,21 +29,26 @@ const ReChartTest = () => {
     const distance = data.reduce(function (acc, obj) {
       return acc + obj.distance
     }, 0)
-    console.log(Math.round(distance * 100) / 100)
     updateTotalDistance(Math.round(distance * 100) / 100)
 
-    let totalSpeeds = 0
+    let totalMinutes = 0
+    let totalSeconds = 0
     let runCount = 0
 
     data.forEach(entry => {
       if (entry.split !== null) {
-        const minutesSeconds = entry.split('.')
-        console.log(minutesSeconds)
-        totalSpeeds += entry.split
+        const number  = entry.split
+        const tString = number.toString()
+        const minuteSecond = tString.split('.')
+        totalMinutes += parseInt(minuteSecond[0])
+        totalSeconds += parseInt(minuteSecond[1])
         runCount += 1
       }
     })
-    const averageSpeed = (Math.round((totalSpeeds / runCount) * 100) / 100)
+    const totalTime = (totalMinutes * 60) + totalSeconds
+    const singleTime = totalTime / runCount
+    const duration = moment.duration(singleTime, 'seconds')
+    const averageSpeed = duration.format('m:ss')
     updateAverageSpeed(averageSpeed)
 
   }, [data])
@@ -63,7 +67,6 @@ const ReChartTest = () => {
       ...formData,
       [name]: value
     }
-    console.log(data)
     updateFormData(data)
   }
 
@@ -159,7 +162,6 @@ const ReChartTest = () => {
 
         axios.post('/api/runs', { distance: formData.distance, split: formData.split })
           .then(resp => {
-            console.log(resp.data)
             resp.data.forEach(item => {
               item.date = moment(item.date).format('DD-MMM')
             })
