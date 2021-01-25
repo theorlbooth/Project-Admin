@@ -12,6 +12,8 @@ const ReChartTest = () => {
   const [data, updateData] = useState([])
   const token = localStorage.getItem('token')
   const [chartToggle, updateChartToggle] = useState(false)
+  const [totalDistance, updateTotalDistance] = useState(0)
+  const [averageSpeed, updateAverageSpeed] = useState(0)
 
   useEffect(() => {
     axios.get('/api/runs')
@@ -19,9 +21,31 @@ const ReChartTest = () => {
         resp.data.forEach(item => {
           item.date = moment(item.date).format('DD-MMM')
         })
+        console.log(resp.data)
         updateData(resp.data)
       })
   }, [])
+
+  useEffect(() => {
+    const distance = data.reduce(function (acc, obj) {
+      return acc + obj.distance
+    }, 0)
+    console.log(Math.round(distance * 100) / 100)
+    updateTotalDistance(Math.round(distance * 100) / 100)
+
+    let totalSpeeds = 0
+    let runCount = 0
+
+    data.forEach(entry => {
+      if (entry.split !== null) {
+        totalSpeeds += entry.split
+        runCount += 1
+      }
+    })
+    const averageSpeed = (Math.round((totalSpeeds / runCount) * 100) / 100)
+    updateAverageSpeed(averageSpeed)
+
+  }, [data])
 
   const [formData, updateFormData] = useState({
     distance: '',
@@ -145,8 +169,24 @@ const ReChartTest = () => {
 
 
   return <>
+
+
+
     <div className="run-page" style={{ display: 'flex', alignItems: 'center' }}>
+
       {chartToggle === false && <div className="charts" style={{ display: 'flex', flexDirection: 'column' }}>
+
+        <div className="run-data" style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', margin: '30px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+            <h3>Total Distance:</h3>
+            <h3 style={{ fontSize: '34px' }}>{totalDistance} km</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+            <h3>Average Split Speed:</h3>
+            <h3 style={{ fontSize: '34px' }}>{averageSpeed} min</h3>
+          </div>
+        </div>
+
         <LineChart
           width={1000}
           height={500}
@@ -168,6 +208,18 @@ const ReChartTest = () => {
 
 
       {chartToggle === true && <div className="charts" style={{ display: 'flex', flexDirection: 'column' }}>
+
+        <div className="run-data" style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center', margin: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+            <h3>Total Distance:</h3>
+            <h3>{totalDistance} km</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+            <h3>Average Split Speed:</h3>
+            <h3>{averageSpeed} min</h3>
+          </div>
+        </div>
+
         <LineChart
           width={1000}
           height={500}
@@ -248,7 +300,7 @@ const ReChartTest = () => {
             </div>
           </form>
         </div>
-        <Link to ="/"><button className="run-button" style={{ width: '200px', height: '40px', borderRadius: '5px' }}>Back</button></Link>
+        <Link to="/"><button className="run-button" style={{ width: '200px', height: '40px', borderRadius: '5px' }}>Back</button></Link>
       </div>
     </div>
   </>
