@@ -38,6 +38,8 @@ const ReChartTest = () => {
 
     data.forEach(entry => {
       if (entry.split !== null) {
+        const minutesSeconds = entry.split('.')
+        console.log(minutesSeconds)
         totalSpeeds += entry.split
         runCount += 1
       }
