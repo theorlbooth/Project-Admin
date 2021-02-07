@@ -40,15 +40,16 @@ const ReChartTest = () => {
 
     data.forEach(entry => {
       if (entry.split !== null) {
-        const number  = entry.split
+        const number  = entry.split.toFixed(2)
         const tString = number.toString()
-        const minuteSecond = tString.split('.')
-        totalMinutes += parseInt(minuteSecond[0])
-        totalSeconds += parseInt(minuteSecond[1])
+        const newFormat = tString.replace('.', ':')
+        const seconds = moment.duration(`00:${newFormat}`).asSeconds()
+
+        totalSeconds += seconds
         runCount += 1
       }
     })
-    const totalTime = (totalMinutes * 60) + totalSeconds
+    const totalTime = totalSeconds
     const singleTime = totalTime / runCount
     const duration = moment.duration(singleTime, 'seconds')
     const averageSpeed = duration.format('m:ss')
