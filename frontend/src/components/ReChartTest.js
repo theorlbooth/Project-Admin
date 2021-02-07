@@ -18,9 +18,12 @@ const ReChartTest = () => {
   useEffect(() => {
     axios.get('/api/runs')
       .then(resp => {
-        resp.data.forEach(item => {
-          item.date = moment(item.date).format('DD-MMM')
+        resp.data.sort(function(a, b) {
+          return a.unixDate - b.unixDate
+        }).forEach(item => {
+          item.unixDate = moment((item.unixDate) * 1000).format('DD-MMM-YY')
         })
+        console.log(resp.data)
         updateData(resp.data)
       })
   }, [])
@@ -201,7 +204,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" padding={{ left: 20 }} tick={{ fill: 'white' }} />
+          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
@@ -234,7 +237,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" padding={{ left: 20 }} tick={{ fill: 'white' }} />
+          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
@@ -251,7 +254,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" padding={{ left: 20 }} tick={{ fill: 'white' }} />
+          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
