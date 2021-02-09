@@ -18,11 +18,6 @@ const ReChartTest = () => {
   useEffect(() => {
     axios.get('/api/runs')
       .then(resp => {
-        resp.data.sort(function(a, b) {
-          return a.unixDate - b.unixDate
-        }).forEach(item => {
-          item.unixDate = moment((item.unixDate) * 1000).format('DD-MMM-YY')
-        })
         console.log(resp.data)
         updateData(resp.data)
       })
@@ -34,13 +29,13 @@ const ReChartTest = () => {
     }, 0)
     updateTotalDistance(Math.round(distance * 100) / 100)
 
-    let totalMinutes = 0
+
     let totalSeconds = 0
     let runCount = 0
 
     data.forEach(entry => {
       if (entry.split !== null) {
-        const number  = entry.split.toFixed(2)
+        const number = entry.split.toFixed(2)
         const tString = number.toString()
         const newFormat = tString.replace('.', ':')
         const seconds = moment.duration(`00:${newFormat}`).asSeconds()
@@ -50,6 +45,7 @@ const ReChartTest = () => {
       }
     })
     const totalTime = totalSeconds
+    // ! Currently dividing by runs - not by kms 
     const singleTime = totalTime / runCount
     const duration = moment.duration(singleTime, 'seconds')
     const averageSpeed = duration.format('m:ss')
@@ -79,28 +75,26 @@ const ReChartTest = () => {
     event.preventDefault()
 
     let now = new Date()
-    now = now.setHours(0, 0, 0, 0)
-    now = now - 86400000
+
+    now = now.setHours(0, 0, 0, 0) / 1000
     const datesBetween = []
 
     axios.get('/api/runs')
       .then(resp => {
         const data = resp.data
-        let lastDate = data[data.length - 1].date
-        lastDate = moment(lastDate).unix() * 1000
+        let lastDate = data[data.length - 1].unixDate
 
         if (formData.distance === '' && formData.split === '' && formData._id === '') {
           if (lastDate < now) {
             while (lastDate < now) {
-              datesBetween.push(lastDate + 86400000)
-              lastDate += 86400000
+              datesBetween.push(lastDate + 86400)
+              lastDate += 86400
             }
             datesBetween.forEach(date => {
-              axios.post('/api/runs', { split: '', distance: '', date: date })
+              console.log(date)
+              axios.post('/api/runs', { unixDate: date, distance: '', split: '', date: moment.unix(date).format('DD-MMM'), year: moment.unix(date).format('YYYY') })
                 .then(resp => {
-                  resp.data.forEach(item => {
-                    item.date = moment(item.date).format('DD-MMM')
-                  })
+                  console.log(resp.data)
                   updateData(resp.data)
                 })
             })
@@ -119,9 +113,7 @@ const ReChartTest = () => {
 
           axios.delete(`/api/runs/${id}`)
             .then(resp => {
-              resp.data.forEach(item => {
-                item.date = moment(item.date).format('DD-MMM')
-              })
+              console.log(resp.data)
               updateData(resp.data)
             })
           updateFormData({ distance: '', split: '', _id: '' })
@@ -129,22 +121,20 @@ const ReChartTest = () => {
 
         } else if (formData.distance !== '' && formData.split !== '' && formData._id === '') {
 
-          if (lastDate < now) {
-            while (lastDate < now) {
-              datesBetween.push(lastDate + 86400000)
-              lastDate += 86400000
+          if (lastDate < now - 86400) {
+            while (lastDate < now - 86400) {
+              datesBetween.push(lastDate + 86400)
+              lastDate += 86400
             }
             datesBetween.forEach(date => {
-              axios.post('/api/runs', { split: '', distance: '', date: date })
+              axios.post('/api/runs', { unixDate: date, distance: '', split: '', date: moment.unix(date).format('DD-MMM'), year: moment.unix(date).format('YYYY') })
             })
-          } else if (lastDate > (now + 86400000)) {
+          } else if (lastDate > now) {
             const id = data[data.length - 1]._id
 
             axios.put(`/api/runs/${id}`, formData)
               .then(resp => {
-                resp.data.forEach(item => {
-                  item.date = moment(item.date).format('DD-MMM')
-                })
+                console.log(resp.data)
                 updateData(resp.data)
               })
             updateFormData({ distance: '', split: '', _id: '' })
@@ -155,30 +145,24 @@ const ReChartTest = () => {
 
           axios.put(`/api/runs/${id}`, formData)
             .then(resp => {
-              resp.data.forEach(item => {
-                item.date = moment(item.date).format('DD-MMM')
-              })
+              console.log(resp.data)
               updateData(resp.data)
             })
           updateFormData({ distance: '', split: '', _id: '' })
           return
         }
 
-        axios.post('/api/runs', { distance: formData.distance, split: formData.split })
+        axios.post('/api/runs', { unixDate: now, distance: formData.distance, split: formData.split, date: moment.unix(now).format('DD-MMM'), year: moment.unix(now).format('YYYY') })
           .then(resp => {
-            resp.data.forEach(item => {
-              item.date = moment(item.date).format('DD-MMM')
-            })
+            console.log(resp.data)
             updateData(resp.data)
           })
       })
-    updateFormData({ distance: '', split: '' })
+    updateFormData({ distance: '', split: '', _id: '' })
   }
 
 
   return <>
-
-
 
     <div className="run-page" style={{ display: 'flex', alignItems: 'center' }}>
 
@@ -205,7 +189,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
+          <XAxis dataKey="date" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
@@ -238,7 +222,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
+          <XAxis dataKey="date" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
@@ -255,7 +239,7 @@ const ReChartTest = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="unixDate" tick={{ fill: 'white' }} />
+          <XAxis dataKey="date" tick={{ fill: 'white' }} />
           <YAxis tick={{ fill: 'white' }} />
           <Tooltip />
           <Legend />
@@ -299,7 +283,7 @@ const ReChartTest = () => {
                   <option>{formData._id}</option>
                   {data.map((run, index) => {
                     return <option key={index} value={run._id}>{run.date}</option>
-                  })}
+                  }).reverse()}
                 </select>
               </div>
             </div>

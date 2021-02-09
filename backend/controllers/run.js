@@ -5,7 +5,7 @@ function getRuns(req, res) {
   Run
     .find()
     .then(runList => {
-      runList.sort((a, b) => (a.date > b.date) ? 1 : -1)
+      runList.sort((a, b) => (a.unixDate > b.unixDate) ? 1 : -1)
       res.send(runList)
     })
     .catch(error => res.send(error))
@@ -19,7 +19,7 @@ function addRun(req, res) {
       Run
         .find()
         .then(runList => {
-          runList.sort((a, b) => (a.date > b.date) ? 1 : -1)
+          runList.sort((a, b) => (a.unixDate > b.unixDate) ? 1 : -1)
           res.send(runList)
         })
     })
@@ -49,7 +49,7 @@ function amendRun(req, res) {
           Run
             .find()
             .then(runList => {
-              runList.sort((a, b) => (a.date > b.date) ? 1 : -1)
+              runList.sort((a, b) => (a.unixDate > b.unixDate) ? 1 : -1)
               res.send(runList)
             })
         })
@@ -70,7 +70,7 @@ function deleteRun(req, res) {
           Run
             .find()
             .then(runList => {
-              runList.sort((a, b) => (a.date > b.date) ? 1 : -1)
+              runList.sort((a, b) => (a.unixDate > b.unixDate) ? 1 : -1)
               res.send(runList)
             })
         })

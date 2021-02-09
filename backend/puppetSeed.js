@@ -143,8 +143,11 @@ async function findRuns() {
     constructor(row) {
       // this.date = row[0]
       this.unixDate = row[1]
+      // console.log(row[1])
       this.distance = row[3]
       this.split = row[4]
+      this.date =  moment.unix(row[1]).format('DD-MMM')
+      this.year = moment.unix(row[1]).format('YYYY')
     }
   }
 
