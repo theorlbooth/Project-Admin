@@ -4,11 +4,14 @@ const moment = require('moment')
 
 
 const runSchema = new mongoose.Schema({
-  unixDate: { type: Number },
-  split: { type: Number },
-  distance: { type: Number },
   date: { type: String },
+  distance: { type: Number },
+  seconds: { type: Number },
+  split: { type: Number },
+  time: { type: String },
+  unixDate: { type: Number },
   year: { type: Number }
+  
   // user: { type: mongoose.Schema.ObjectId, ref: 'User' }
 })
 

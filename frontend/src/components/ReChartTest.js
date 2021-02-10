@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import moment, { now } from 'moment'
 import Toggle from 'react-toggle'
-
-
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+
+import { secondConverter } from './Functions/TimeConversion'
 
 const ReChartTest = () => {
 
@@ -29,24 +29,12 @@ const ReChartTest = () => {
     }, 0)
     updateTotalDistance(Math.round(distance * 100) / 100)
 
+    const totalTime = data.reduce(function (acc, obj) {
+      return acc + obj.seconds
+    }, 0)
 
-    let totalSeconds = 0
-    let runCount = 0
 
-    data.forEach(entry => {
-      if (entry.split !== null) {
-        const number = entry.split.toFixed(2)
-        const tString = number.toString()
-        const newFormat = tString.replace('.', ':')
-        const seconds = moment.duration(`00:${newFormat}`).asSeconds()
-
-        totalSeconds += seconds
-        runCount += 1
-      }
-    })
-    const totalTime = totalSeconds
-    // ! Currently dividing by runs - not by kms 
-    const singleTime = totalTime / runCount
+    const singleTime = totalTime / distance
     const duration = moment.duration(singleTime, 'seconds')
     const averageSpeed = duration.format('m:ss')
     updateAverageSpeed(averageSpeed)
@@ -70,6 +58,17 @@ const ReChartTest = () => {
     updateFormData(data)
   }
 
+  // ! From here onwards ----------
+  // ! ----------------------------
+
+  function cleanTime(time) {
+    const newTime = time.replaceAll('.', ':')
+    if (newTime.length > 5) {
+      return moment.duration(newTime).asSeconds()
+    } else {
+      return moment.duration(newTime).asMinutes()
+    }
+  }
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -92,7 +91,7 @@ const ReChartTest = () => {
             }
             datesBetween.forEach(date => {
               console.log(date)
-              axios.post('/api/runs', { unixDate: date, distance: '', split: '', date: moment.unix(date).format('DD-MMM'), year: moment.unix(date).format('YYYY') })
+              axios.post('/api/runs', { date: moment.unix(date).format('DD-MMM'), distance: '', seconds: '', split: '', time: '', unixDate: date, year: moment.unix(date).format('YYYY') })
                 .then(resp => {
                   console.log(resp.data)
                   updateData(resp.data)
@@ -127,12 +126,12 @@ const ReChartTest = () => {
               lastDate += 86400
             }
             datesBetween.forEach(date => {
-              axios.post('/api/runs', { unixDate: date, distance: '', split: '', date: moment.unix(date).format('DD-MMM'), year: moment.unix(date).format('YYYY') })
+              axios.post('/api/runs', { date: moment.unix(date).format('DD-MMM'), distance: '', seconds: '', split: '', time: '', unixDate: date, year: moment.unix(date).format('YYYY') })
             })
           } else if (lastDate > now) {
             const id = data[data.length - 1]._id
 
-            axios.put(`/api/runs/${id}`, formData)
+            axios.put(`/api/runs/${id}`, { ...formData, seconds: (cleanTime(formData.split) * formData.distance), time: secondConverter((cleanTime(formData.split) * formData.distance)) })
               .then(resp => {
                 console.log(resp.data)
                 updateData(resp.data)
@@ -143,7 +142,7 @@ const ReChartTest = () => {
         } else if (formData.distance !== '' && formData.split !== '' && formData._id !== '') {
           const id = formData._id
 
-          axios.put(`/api/runs/${id}`, formData)
+          axios.put(`/api/runs/${id}`, { ...formData, seconds: (cleanTime(formData.split) * formData.distance), time: secondConverter((cleanTime(formData.split) * formData.distance)) })
             .then(resp => {
               console.log(resp.data)
               updateData(resp.data)
@@ -151,8 +150,7 @@ const ReChartTest = () => {
           updateFormData({ distance: '', split: '', _id: '' })
           return
         }
-
-        axios.post('/api/runs', { unixDate: now, distance: formData.distance, split: formData.split, date: moment.unix(now).format('DD-MMM'), year: moment.unix(now).format('YYYY') })
+        axios.post('/api/runs', { date: moment.unix(now).format('DD-MMM'), distance: formData.distance, seconds: (cleanTime(formData.split) * formData.distance), split: formData.split, time: secondConverter((cleanTime(formData.split) * formData.distance)), unixDate: now, year: moment.unix(now).format('YYYY') })
           .then(resp => {
             console.log(resp.data)
             updateData(resp.data)

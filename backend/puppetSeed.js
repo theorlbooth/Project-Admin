@@ -13,8 +13,7 @@ async function findRuns() {
 
   const objectArray = []
 
-
-  const browser = await puppeteer.launch({ headless: false, slowMo: 40 })
+  const browser = await puppeteer.launch({ headless: true, slowMo: 0 })
   const page = await browser.newPage()
 
   const headlessUserAgent = await page.evaluate(() => navigator.userAgent)
@@ -48,9 +47,13 @@ async function findRuns() {
     return clean.substring(0, clean.indexOf('<'))
   }
 
-  function cleanDate(date) {
+  function cleanDate(date, format) {
     const momentDate = date.split(' ').pop()
-    return moment(momentDate).format('DD-MM-YYYY')
+    if (format === 'DD-MMM') {
+      return moment(momentDate).format('DD-MMM')
+    } else if (format === 'YYYY') {
+      return moment(momentDate).format('YYYY')
+    }
   }
 
   function unixDate(date) {
@@ -79,9 +82,9 @@ async function findRuns() {
 
     const rows = await page.evaluate(() =>
       Array.from(document.querySelectorAll('tbody > tr')).map(row => [
-        row.querySelector('td:nth-child(2)').innerHTML,
-        row.querySelector('td:nth-child(4)').innerHTML,
-        row.querySelector('td:nth-child(5)').innerHTML
+        row.querySelector('td:nth-child(2)').innerHTML, // * Date
+        row.querySelector('td:nth-child(4)').innerHTML, // * Time
+        row.querySelector('td:nth-child(5)').innerHTML // * Distance
       ]))
 
     const requiredRows = []
@@ -93,15 +96,19 @@ async function findRuns() {
 
     requiredRows.forEach(row => {
       const newArray = []
-      newArray.push(cleanDate(row[0]))
-      newArray.push(unixDate(row[0]))
-      newArray.push(row[1])
+      newArray.push(cleanDate(row[0], 'DD-MMM'))
       newArray.push(cleanDistance(row[2]))
 
       const seconds = cleanTime(row[1])
+      newArray.push(seconds)
+
       const distance = parseFloat(cleanDistance(row[2]))
       const split = (seconds / (distance / 1000))
       newArray.push(moment.utc(split).format('mm.ss'))
+
+      newArray.push(row[1])
+      newArray.push(unixDate(row[0]))
+      newArray.push(cleanDate(row[0], 'YYYY'))
 
       cleanedData.push(newArray)
     })
@@ -114,21 +121,25 @@ async function findRuns() {
 
   const reversedData = cleanedData.reverse()
 
+  // console.log(reversedData)
   let i = 0
   const newDates = []
 
   while (i < reversedData.length - 1) {
-    let firstNumber = reversedData[i][1] + 86400
-    const secondNumber = reversedData[i + 1][1]
+    let firstNumber = reversedData[i][5] + 86400
+    const secondNumber = reversedData[i + 1][5]
 
     while (firstNumber < secondNumber) {
       const newDate = []
 
-      newDate.push(moment.unix(firstNumber).format('DD-MM-YYYY'))
+      newDate.push(moment.unix(firstNumber).format('DD-MMM'))
+      newDate.push('')
+      newDate.push('')
+      newDate.push('')
+      newDate.push('')
       newDate.push(firstNumber)
-      newDate.push('')
-      newDate.push('')
-      newDate.push('')
+      newDate.push(moment.unix(firstNumber).format('YYYY'))
+        
       newDates.push(newDate)
       firstNumber += 86400
     }
@@ -137,21 +148,21 @@ async function findRuns() {
 
   const concat = newDates.concat(reversedData)
 
-  const sortedArray = concat.sort((a, b) => a[1] - b[1])
+  // const sortedArray = concat.sort((a, b) => a[1] - b[1])
 
   class Run {
     constructor(row) {
-      // this.date = row[0]
-      this.unixDate = row[1]
-      // console.log(row[1])
-      this.distance = row[3]
-      this.split = row[4]
-      this.date =  moment.unix(row[1]).format('DD-MMM')
-      this.year = moment.unix(row[1]).format('YYYY')
+      this.date = row[0]
+      this.distance = row[1]
+      this.seconds = row[2]
+      this.split = row[3]
+      this.time = row[4]
+      this.unixDate = row[5]
+      this.year = row[6]
     }
   }
 
-  sortedArray.forEach(row => {
+  concat.forEach(row => {
     objectArray.push(new Run(row))
   })
 
@@ -159,6 +170,7 @@ async function findRuns() {
 
   await browser.close()
 
+  // console.log(objectArray)
   return objectArray
 }
 
