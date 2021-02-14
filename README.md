@@ -64,10 +64,73 @@ I wanted a quick snap shot of the league table and of my teams current position.
     }
   }
 ```
+
 ### Run Graph
 I wanted to be able to have a quick glimpse at fitness progression without having to deep dive into an app. This is by no means meant to be comprehensive and I will continue to use the app when required. I wanted to track distance and speed over time as these seemed the two most relevant and the two units I strive to improve on. To plot these I used [Recharts](https://recharts.org/en-US). 
 
-I also wanted to be able to input the data from the UI and not having to change it in the code every time - for this I now needed a backend. Given that the information going in is pretty basic and this app is desgined for one user I decided to go with a NoSQL backend and follow the process of a MERN stack. 
+The running app I am using's API has a lot to be desired and as I wanted to input the data going forward in any case, so I put together a backend. Given that the information going in is pretty basic and this app is desgined for one user I decided to go with a NoSQL database and follow the process of a MERN stack. As I have said, the API in place for the running app I use, is not great, so I decided to scrape the information I wanted and seed with said data. For this I used puppeteer:
+
+(selected parts from full function):
+```
+async function findRuns() {
+
+  const objectArray = []
+
+  const browser = await puppeteer.launch({ headless: true, slowMo: 0 })
+  const page = await browser.newPage()
+
+  const headlessUserAgent = await page.evaluate(() => navigator.userAgent)
+  const chromeUserAgent = headlessUserAgent.replace('HeadlessChrome', 'Chrome')
+  await page.setUserAgent(chromeUserAgent)
+  await page.setExtraHTTPHeaders({
+    'accept-language': 'en-US,en;q=0.8'
+  })
+
+  await page.goto('https://www.strava.com/login')
+
+  await page.click('.btn-accept-cookie-banner')
+
+  await page.type('#email', 'theorlbooth@googlemail.com')
+  await page.type('#password', process.env.STRAVA_PASSWORD)
+
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click('#login-button')
+  ])
+
+  await page.goto('https://www.strava.com/athlete/training')
+
+  await page.select('#activity_type', 'Run')
+
+  await page.waitForFunction(() => document.querySelectorAll('#search-results tbody tr').length >= 3)
+  await page.waitForTimeout(1000)
+```
+```
+  for (let i = 0; i < 2; i++) {
+
+    const rows = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('tbody > tr')).map(row => [
+        row.querySelector('td:nth-child(2)').innerHTML, // * Date
+        row.querySelector('td:nth-child(4)').innerHTML, // * Time
+        row.querySelector('td:nth-child(5)').innerHTML // * Distance
+      ]))
+```
+```
+
+    await page.click('.next_page')
+
+    await page.waitForFunction(() => document.querySelectorAll('#search-results tbody tr').length >= 3)
+    await page.waitForTimeout(1000)
+  }
+```
+```
+  console.log('done')
+
+  await browser.close()
+
+  return objectArray
+}
+```
 
 Plotting over time I found to be a lot less straight forward than anticipated. I presumed there would be a prop for the graph that could be set to 'start date' and one to be set to 'current date' and it would deliver everything in between. This was not the case. I toyed with a couple of ideas of how to go about this manually. The first of which was to have a function in a setTimeout that would fire every 24h and update the days in the backend (with empty data). However I didnt really like this as I didnt think it was the cleanest method and if left unchecked could open the door to more issues in the future. In the end I decided to update the past dates only when a new entry is logged. For this I wrote a function that checks the last input and pushes the dates since to an array. Each item in this array is then posted to the backend before the new data is posted for the current date. 
 
@@ -121,14 +184,53 @@ Plotting over time I found to be a lot less straight forward than anticipated. I
 
 The next step will be to do the refactoring of this function as it has a fair bit of repetition in it and is much longer than it needs to be.
 
+I wanted to show the Total Distance run and the Average Split Pace. When seeding and when inputting subsquent new runs I allowed for a "seconds" field which is automatically entered based on the information given. In order to convert the total number of seconds back into the right time format (Average Split Pace) I wrote a recursive function rather than using moment.js (used with other aspects of the project).
+
+
+```
+export function secondConverter(time) {
+
+  function recuF(seconds, count) {
+    count = count || 0
+    if (seconds - 60 < 0) {
+      return [count, seconds]
+    } else {
+      count += 1
+      return recuF(seconds - 60, count)
+    }
+  }
+
+  if (time < 3600) {
+    const newTime = recuF(time)
+    if (newTime[1] < 10) {
+      return `${newTime[0]}:${newTime[1]}0`
+    } else {
+      return `${newTime[0]}:${newTime[1]}`
+    }
+  } else {
+    const newTime = recuF(time)
+    const hours = Math.floor(newTime[0] / 60)
+    const minutes = newTime[0] % 60
+    if (minutes < 10 && newTime[1] < 10) {
+      return `${hours}:0${minutes}:0${newTime[1]}`
+    } else if (minutes < 10) {
+      return `${hours}:0${minutes}:${newTime[1]}`
+    } else if (newTime[1] < 10) {
+      return `${hours}:${minutes}:0${newTime[1]}`
+    } else {
+      return `${hours}:${minutes}:${newTime[1]}`
+    }
+  }
+}
+```
 
 ## Screenshots
 
 ![screenshot](./screenshots/X_SS.png)
 <img src="./screenshots/X_N7.png" alt="Next 7 Days" width="49.4%"> <img src="./screenshots/X_N24.png" alt="Next 24h" width="50.1%"> 
 <img src="./screenshots/X_Lisbon.png" alt="Lisbon" width="33%"> <img src="./screenshots/X_Delhi.png" alt="Delhi" width="33%"> <img src="./screenshots/X_Shanghai.png" alt="Shanghai" width="33%">
-<img src="./screenshots/X_Graph1.png" alt="Combined Graph">
-<img src="./screenshots/X_Graph2.png" alt="Split Graph">
+<img src="./screenshots/X_Graph4.png" alt="Combined Graph">
+<img src="./screenshots/X_Graph3.png" alt="Split Graph">
 
 
 
