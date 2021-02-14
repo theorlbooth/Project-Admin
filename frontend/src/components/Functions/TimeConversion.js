@@ -33,4 +33,4 @@ export function secondConverter(time) {
   }
 }
 
-console.log(secondConverter(59))
+console.log(secondConverter(8000))

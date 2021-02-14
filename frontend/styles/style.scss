@@ -196,3 +196,54 @@ time {
   color: white;
   font-family: 'Courier Prime', monospace;
 }
+
+.run-button:hover {
+  background-color: white;
+  color: #00d2b4;
+}
+
+.buttons {
+  padding-bottom: 6%;
+
+  .graph-button {
+    height: 50px;
+    width: 60px;
+    background-color: #0C1559;
+    border: 1px solid white;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+  }
+
+  .graph-button:hover {
+    background-color: white;
+    color: #0C1559;
+  }
+
+  .graph-button:focus {
+    background-color: white;
+    color: #0C1559;
+    outline: none;
+  }
+
+  .graph-button:active {
+    background-color: #00d2b4;
+    color: white;
+  }
+}
+
+.submit-button {
+  height: 40px;
+  width: 80px;
+  background-color: #0C1559;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.submit-button:hover {
+  background-color: white;
+  color: #0C1559;
+}
+

@@ -7,13 +7,17 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'r
 
 import { secondConverter } from './Functions/TimeConversion'
 
+
 const ReChartTest = () => {
 
   const [data, updateData] = useState([])
+  const [showData, updateShowData] = useState([])
   const token = localStorage.getItem('token')
   const [chartToggle, updateChartToggle] = useState(false)
   const [totalDistance, updateTotalDistance] = useState(0)
   const [averageSpeed, updateAverageSpeed] = useState(0)
+  const [buttonStatus, updateButtonStatus] = useState('2021')
+
 
   useEffect(() => {
     axios.get('/api/runs')
@@ -24,22 +28,32 @@ const ReChartTest = () => {
   }, [])
 
   useEffect(() => {
-    const distance = data.reduce(function (acc, obj) {
+    let newData = []
+    if (buttonStatus === 'All') {
+      newData = data
+    } else {
+      newData = data.filter(run => {
+        return run.year === parseInt(buttonStatus)
+      })
+    }
+    updateShowData(newData)
+
+    const distance = newData.reduce(function (acc, obj) {
       return acc + obj.distance
     }, 0)
     updateTotalDistance(Math.round(distance * 100) / 100)
 
-    const totalTime = data.reduce(function (acc, obj) {
+    const totalTime = newData.reduce(function (acc, obj) {
       return acc + obj.seconds
     }, 0)
-
 
     const singleTime = totalTime / distance
     const duration = moment.duration(singleTime, 'seconds')
     const averageSpeed = duration.format('m:ss')
     updateAverageSpeed(averageSpeed)
 
-  }, [data])
+  }, [buttonStatus, data])
+
 
   const [formData, updateFormData] = useState({
     distance: '',
@@ -58,9 +72,6 @@ const ReChartTest = () => {
     updateFormData(data)
   }
 
-  // ! From here onwards ----------
-  // ! ----------------------------
-
   function cleanTime(time) {
     const newTime = time.replaceAll('.', ':')
     if (newTime.length > 5) {
@@ -69,6 +80,8 @@ const ReChartTest = () => {
       return moment.duration(newTime).asMinutes()
     }
   }
+
+
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -160,6 +173,9 @@ const ReChartTest = () => {
   }
 
 
+  
+
+
   return <>
 
     <div className="run-page" style={{ display: 'flex', alignItems: 'center' }}>
@@ -180,7 +196,7 @@ const ReChartTest = () => {
         <LineChart
           width={1000}
           height={500}
-          data={data}
+          data={showData}
           syncId='anyId'
           margin={{
             top: 5, right: 30, left: 20, bottom: 5
@@ -213,7 +229,7 @@ const ReChartTest = () => {
         <LineChart
           width={1000}
           height={500}
-          data={data}
+          data={showData}
           syncId='anyId'
           margin={{
             top: 5, right: 30, left: 20, bottom: 20
@@ -230,7 +246,7 @@ const ReChartTest = () => {
         <LineChart
           width={1000}
           height={500}
-          data={data}
+          data={showData}
           syncId='anyId'
           margin={{
             top: 5, right: 30, left: 20, bottom: 5
@@ -246,6 +262,13 @@ const ReChartTest = () => {
       </div>}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ border: '1px solid white', borderRadius: '5px', padding: '20px', margin: '10px' }}>
+          
+          <div className="buttons" style= {{ display: 'flex', justifyContent: 'space-evenly', margin: '0px' }}>
+            <button id='button-1' className='graph-button' value='All' onClick={(event) => updateButtonStatus(event.target.value)}>All</button>
+            <button id='button-2' className='graph-button' value='2020' onClick={(event) => updateButtonStatus(event.target.value)}>2020</button>
+            <button id='button-3' className='graph-button' value='2021' onClick={(event) => updateButtonStatus(event.target.value)}>2021</button>
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: '6%' }}>
             <Toggle
               id='chart-toggle'
@@ -286,7 +309,7 @@ const ReChartTest = () => {
               </div>
             </div>
             <div className="control" style={{ display: 'flex', justifyContent: 'center' }}>
-              <button>Submit</button>
+              <button className="submit-button">Submit</button>
             </div>
           </form>
         </div>

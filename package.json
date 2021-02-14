@@ -29,6 +29,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
@@ -51,6 +52,7 @@
     "react-moment": "^1.0.0",
     "react-router-dom": "^5.2.0",
     "react-toggle": "^4.1.1",
+    "react-triple-toggle-switch": "^1.0.3",
     "recharts": "^2.0.3",
     "validator": "^13.1.17"
   }
